@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Cosmophobia</title>
+    <meta name="description" content="A realistic, frightening EVA survival game set 408 km above the Earth." />
+    <meta name="theme-color" content="#03050a" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:ital,wght@0,400;0,500;1,400&family=Jost:wght@200;300;400&display=swap" />
+  </head>
+  <body>
+    <canvas id="view" aria-label="View from your helmet"></canvas>
+    <div id="hud" class="hud" data-mode="full"></div>
+
+    <section id="title" class="screen title" hidden>
+      <header class="t-top">
+        <span>Low Earth orbit</span><span>408 km</span><span>7.66 km/s</span><span>One orbit every 92 min</span>
+      </header>
+      <div class="t-main">
+        <h1 class="t-name" aria-label="Cosmophobia">Cosmophobia</h1>
+        <p class="t-def"><span class="t-word">cos·mo·pho·bi·a</span> <i>n.</i> fear of the cosmos: of its size, of its silence, and of how little of it will ever notice you.</p>
+        <div class="t-actions">
+          <button id="begin" class="btn primary" type="button">Begin EVA</button>
+          <button id="begin-skip" class="btn ghost" type="button" hidden>Skip to the strike</button>
+        </div>
+        <p class="t-warn">Headphones on, lights off. Contains darkness, isolation, and loud sudden sounds.</p>
+      </div>
+      <aside class="t-controls" aria-label="Controls">
+        <h2>Controls</h2>
+        <dl>
+          <dt>Mouse</dt><dd>Look</dd>
+          <dt>W A S D</dt><dd>Thrust</dd>
+          <dt>Space · Shift</dt><dd>Up · down</dd>
+          <dt>R</dt><dd>Stop tumbling (SAFER hold)</dd>
+          <dt>X</dt><dd>Brake, hold</dd>
+          <dt>G · right-click</dt><dd>Grab handrail, then W to push off</dd>
+          <dt>F</dt><dd>Use, hold</dd>
+          <dt>L</dt><dd>Helmet lights</dd>
+          <dt>V</dt><dd>Gold sun visor</dd>
+          <dt>Q · E</dt><dd>Roll</dd>
+          <dt>Esc</dt><dd>Pause</dd>
+        </dl>
+      </aside>
+      <footer class="t-foot">Earth imagery derived from NASA Blue Marble · 28,495 real stars from the HYG catalogue · every sound synthesised live</footer>
+    </section>
+
+    <section id="pause" class="screen pause" hidden>
+      <div class="panel" role="dialog" aria-labelledby="pause-h">
+        <h2 id="pause-h">Holding</h2>
+        <p class="p-note">Paused. Nothing moves until you do.</p>
+        <button id="resume" class="btn primary" type="button">Resume</button>
+        <div class="settings">
+          <label for="sens">Mouse sensitivity</label>
+          <input id="sens" type="range" min="0.3" max="2.5" step="0.05" value="1" />
+          <label for="vol">Volume</label>
+          <input id="vol" type="range" min="0" max="1" step="0.05" value="1" />
+          <label for="quality">Graphics</label>
+          <select id="quality">
+            <option value="1">High</option>
+            <option value="0.75">Medium</option>
+            <option value="0.5">Low</option>
+          </select>
+          <label class="check"><input id="invert" type="checkbox" /> Invert vertical look</label>
+          <label class="check"><input id="music" type="checkbox" checked /> Score</label>
+        </div>
+        <div class="p-actions">
+          <button id="restart" class="btn ghost" type="button">Restart from the strike</button>
+          <button id="quit" class="btn ghost" type="button">Title screen</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="end" class="screen end" hidden>
+      <div class="end-inner">
+        <p class="e-kicker" id="e-kicker"></p>
+        <h2 class="e-title" id="e-title"></h2>
+        <p class="e-body" id="e-body"></p>
+        <dl class="e-stats" id="e-stats"></dl>
+        <div class="t-actions">
+          <button id="again" class="btn primary" type="button">Try again</button>
+          <button id="to-title" class="btn ghost" type="button">Title screen</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="loading" class="screen loading">
+      <div class="l-inner">
+        <div class="l-name">Cosmophobia</div>
+        <div class="l-bar"><i id="l-fill"></i></div>
+        <div class="l-msg" id="l-msg">Loading the Earth</div>
+      </div>
+    </section>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
