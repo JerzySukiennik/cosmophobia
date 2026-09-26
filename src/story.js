@@ -82,7 +82,7 @@ export class Story {
     this.say('ev2', 'Copy that, Houston.', { delay: 8.4 });
     this.say('ev2', 'Hey. Take a second. Look down.', { delay: 10.6 });
     this.say('ev2', 'Never gets old, does it?', { delay: 14.8 });
-    this.say('capcom', "Enjoy it. Sunset in about two minutes. Let's stow the tools and head for the airlock.", { delay: 17.6 });
+    this.say('capcom', "Enjoy it. Sunset in under two minutes. Let's stow the tools and head for the airlock.", { delay: 17.6 });
     this.after(22.4, () => g.distantFlashes(true));
     this.say('ev2', "Houston, EV2. I'm seeing flashes off the starboard arrays. Like... glitter?", { delay: 22.8 });
     this.say('capcom', 'EV2, say again? ... EV1, EV2, debris strike, debris strike! Get behind the—', { delay: 28.0, urgency: 1, dur: 3.2 });

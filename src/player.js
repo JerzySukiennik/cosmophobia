@@ -151,7 +151,12 @@ export class Player {
       if (this.anchor) {
         this.pos.lerp(this.anchor, 1 - Math.exp(-dt * 6));
       }
-      if (input.move.z < -0.5) {
+      if (input.grab) {
+        // let go, keeping station-relative rest
+        this.anchored = false;
+        this.anchor = null;
+        this.vel.set(0, 0, 0);
+      } else if (input.move.z < -0.5) {
         // push off in the direction you're looking
         this.anchored = false;
         this.anchor = null;

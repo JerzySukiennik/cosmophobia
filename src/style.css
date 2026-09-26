@@ -367,14 +367,14 @@ kbd {
 
 .hud-alerts {
   position: absolute;
-  top: 27vh;
+  top: 16vh;
   left: 50%;
   transform: translateX(-50%);
   display: grid;
   gap: 0.35rem;
   justify-items: center;
 }
-.alert { font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase; padding: 0.15rem 0.6rem; border: 1px solid currentColor; background: rgba(3, 5, 10, 0.35); }
+.alert { font-size: 0.64rem; letter-spacing: 0.2em; text-transform: uppercase; padding: 0.15rem 0.6rem; border: 1px solid currentColor; background: rgba(3, 5, 10, 0.35); }
 .alert.caution { color: var(--caution); }
 .alert.warning { color: var(--warning); animation: blink 0.8s steps(2, jump-none) infinite; }
 .alert.info { color: var(--limb); border-color: var(--limb-faint); }
@@ -404,6 +404,8 @@ kbd {
   font-size: 0.74rem;
   white-space: nowrap;
 }
+
+.hud-nav .hint { margin-top: 0.3rem; font-size: 0.68rem; color: var(--ink-dim); text-shadow: none; }
 
 .reticle { position: absolute; top: 50%; left: 50%; width: 22px; height: 22px; transform: translate(-50%, -50%); }
 .reticle::before, .reticle::after { content: ''; position: absolute; background: var(--limb-dim); }

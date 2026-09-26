@@ -13,8 +13,8 @@ import { HUD } from './hud.js';
 import { AudioEngine } from './audio.js';
 import { Story } from './story.js';
 
-const INTRO_PHASE = 16.0; // degrees: over the Pacific, sun ~20° up, two minutes before sunset
-const STRIKE_PHASE = 28.0;
+const INTRO_PHASE = 20.0; // degrees: over the Pacific, late afternoon, ~100 s before sunset
+const STRIKE_PHASE = 32.0;
 const SUN_I = 6.0; // sunlight irradiance in scene units
 
 const _v = new THREE.Vector3();
@@ -270,7 +270,7 @@ export class Game {
     p.hr = 150;
     cm.state.velocity.set(0.38, 0.42, 0.62);
     cm.state.spin.set(0.22, 0.34, -0.17);
-    this.r.cracks.add(0.55);
+    this.r.cracks.add(0.35);
     this.flash = 1;
     this.shake = 1.4;
     this.red = 0.6;
@@ -478,7 +478,7 @@ export class Game {
 
     // lamps
     const lampOn = p.lights && inMission && this.state !== 'dead';
-    for (const l of this.lamps) l.intensity = THREE.MathUtils.damp(l.intensity, lampOn ? 42 : 0, 12, dt);
+    for (const l of this.lamps) l.intensity = THREE.MathUtils.damp(l.intensity, lampOn ? 13 : 0, 12, dt);
 
     // lighting from the orbit model
     const sunVis = orbit.sunVisible;
@@ -636,11 +636,23 @@ export class Game {
     this.adaptation += (adaptTarget - this.adaptation) * (1 - Math.exp(-dt * rate));
     let target = 1.0 + this.adaptation * 4.2;
     target *= 1 - sunOnScreen * 0.35;
+    // Your own lamps on something close: the eye stops down.
+    if (lampOn && this.state !== 'title') {
+      const fwd = _v2.set(0, 0, -1).applyQuaternion(cam.quaternion);
+      let d = this.station.raycast(cam.position, fwd, 30);
+      const toCm = _v.copy(this.crewmate.root.position).sub(cam.position);
+      const along = toCm.dot(fwd);
+      if (along > 0 && toCm.addScaledVector(fwd, -along).length() < 1.0) d = Math.min(d, along);
+      if (isFinite(d)) {
+        const lum = (13 * 0.8) / Math.PI / Math.max(d * d, 0.3);
+        target = Math.min(target, Math.max(0.55, 0.5 / lum));
+      }
+    }
     if (this.player.goldVisor) target *= 0.8;
     const er = target < this.exposure ? 3 : 0.5;
     this.exposure += (target - this.exposure) * (1 - Math.exp(-dt * er));
     this.r.renderer.toneMappingExposure = this.exposure;
-    this.r.bloom.threshold = 1.1 / this.exposure;
+    this.r.bloom.threshold = 2.2 / this.exposure;
     this.sky.update(orbit, this.adaptation * (this.player.goldVisor ? 0.3 : 1), this.r.pixelRatio);
   }
 
@@ -653,7 +665,7 @@ export class Game {
     const fr = this.fadeRate || 0.8;
     this.fade += (this.fadeTarget - this.fade) * Math.min(1, dt * (this.fadeTarget > this.fade ? fr * 3 : 0.9));
     u.uFlash.value = this.flash * this.flash;
-    u.uRed.value = this.red + (p.alive && p.hypoxia > 0 ? 0 : 0) + (this.state === 'play' && p.psi < 3.2 ? 0.1 : 0);
+    u.uRed.value = this.red + (this.state === 'play' && p.psi < 3.2 ? 0.04 : 0);
     u.uFade.value = this.fade;
     const inSuit = this.state !== 'title';
     // breath condensation: each exhale fogs the visor a little
@@ -737,6 +749,16 @@ export class Game {
       markers.push({ id: 'debris', pos: pass.dir, infinite: true, label: 'debris stream', kind: 'danger' });
     }
     this.hud.markers(markers, this.r.nearCam, this.w, this.h);
+    // contextual help for the free way to move: handrails
+    let hint = '';
+    if (this.state === 'play' && p.alive) {
+      if (p.anchored) hint = '<kbd>W</kbd> push off where you look (no propellant) · <kbd>G</kbd> let go';
+      else if (story.promptActive !== true) {
+        const s = this.station.sdf(p.pos);
+        if (s.d < SUIT.grabRange && s.c && s.c.grab) hint = '<kbd>G</kbd> / right-click · grab handrail';
+      }
+    }
+    this.hud.hint(hint);
     const night = orbit.sunVisible < 0.05;
     this.hud.update(dt, {
       o2: p.o2,

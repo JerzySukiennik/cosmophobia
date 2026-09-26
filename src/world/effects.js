@@ -161,7 +161,7 @@ export function createEffects(scene) {
       v: v.clone(),
       q: new THREE.Quaternion().setFromEuler(new THREE.Euler(Math.random() * 6, Math.random() * 6, Math.random() * 6)),
       w: new THREE.Vector3((Math.random() - 0.5) * 6, (Math.random() - 0.5) * 6, (Math.random() - 0.5) * 6),
-      scale: 0.5 + Math.random() * 1.2,
+      scale: 0.3 + Math.random() * 0.7,
       age: 0,
     };
     if (set.items.length >= SHARDS_PER) set.items.shift();
@@ -200,7 +200,7 @@ export function createEffects(scene) {
       shard(p.clone().addScaledVector(normal, 0.2), _v);
     }
     if (puff) {
-      for (let i = 0; i < 70; i++) {
+      for (let i = 0; i < 35; i++) {
         _v.set(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).multiplyScalar(1.2).add(normal).normalize();
         _v.multiplyScalar(1 + Math.random() * 5);
         _c.setRGB(0.22, 0.23, 0.25);

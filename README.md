@@ -1,0 +1,81 @@
+# Cosmophobia
+
+*cos·mo·pho·bi·a* — n. fear of the cosmos: of its size, of its silence, and of how little of it will ever notice you.
+
+A short, realistic survival-horror game set on a spacewalk 408 km above the Earth. It runs in the browser.
+
+You are EV1, finishing an antenna job on the starboard truss of station ARGUS with your crewmate Mara Ellison (EV2). The sun is setting over the Pacific. Then a debris cascade crosses your orbit.
+
+Your tether is cut and you're tumbling. Your suit is leaking. Ellison was carrying the spare oxygen bottle, and her suit beacon is still transmitting. Night is coming, and the fragments will come around again.
+
+A run takes about 5–8 minutes.
+
+## Play
+
+```bash
+npm install
+npm run dev        # http://localhost:5173
+npm run build      # dist/index.html — one self-contained file, open it anywhere
+```
+
+`npm run build` inlines everything (code, Earth textures, star catalogue) into `dist/index.html`, so the game runs from a double-click or any static host. It also writes `dist/cosmophobia.html`, the same page without the `<html>/<body>` skeleton, for hosts that wrap pages themselves. It needs a WebGL 2 browser. Play with headphones, in the dark.
+
+| Input | Action |
+| --- | --- |
+| Mouse | Look (click to capture the mouse; if capture is blocked, drag to look) |
+| W A S D | Thrust |
+| Space · Shift | Up · down |
+| R | SAFER automatic attitude hold (stop tumbling) |
+| X (hold) | Brake: null your velocity relative to the station, or to EV2 when near her |
+| G · right-click | Grab a handrail; then W pushes off for free, G lets go |
+| F (hold) | Use |
+| L | Helmet lights |
+| V | Gold sun visor |
+| Q · E | Roll |
+| H · M · Esc | Toggle HUD · toggle score · pause |
+
+On phones and tablets a touch layout appears: a stick for thrust, drag to look, and buttons for the rest.
+
+## What's real
+
+**Earth.** The Earth is not a textured sphere. Each pixel is ray-traced against the exact planet and a single-scattering Rayleigh + Mie atmosphere with ozone absorption. Sunlight's path through the air uses the Chapman grazing-incidence approximation. So the blue limb, the red sunset band, the Earth's shadow on its own atmosphere and the reddened last light on the station all come out of the physics. Oceans have sun glint; clouds cast shadows; city lights fade under cloud. Lightning flickers in night-side storms. The green 557.7 nm airglow line hugs the horizon, and auroral ovals sit on the true geomagnetic pole.
+
+**Orbit.** The orbit is ISS-like: 408 km, 51.64° inclination. The strike happens over the Pacific, sunset comes over the western US, and night falls over North America and the Atlantic. Time runs 6× faster than real life, so one run sees a full sunset and night.
+
+**Sky.** It shows 28,495 real stars from the HYG catalogue, coloured by their B–V index, plus a Milky Way laid along the real galactic plane. Stars don't twinkle up here. They are invisible in sunlight and appear slowly as your eyes dark-adapt. Your own helmet lamps slow that adaptation.
+
+**Flight.** Movement is Newtonian with a finite nitrogen budget (13 m/s of Δv). SAFER's real attitude-hold button stops a tumble. Pushing off handrails costs nothing.
+
+**Your body.** Stress raises your heart rate, heart rate raises your breathing, and breathing burns oxygen. Panic shortens your life. Your visor fogs with each exhale. Hypoxia drains colour and narrows your vision.
+
+**Debris.** Fragments crossing at ~10 km/s are invisible. You see them only as silent impact flashes, sprays of molten metal and shredded solar arrays. Pressurised modules and the truss shield you; the solar arrays don't. Hypervelocity impacts make plasma, so the radio crackles when they hit nearby.
+
+**Sound.** Space is silent. Everything you hear is inside your helmet (breath, heartbeat, fans, jets through the backpack), on the radio (NASA's Quindar tones, squelch, band-limited voices), or conducted through whatever your gloves are touching. All of it is synthesised live with the Web Audio API.
+
+## Project layout
+
+```
+src/
+  main.js            boot, loading, screens, main loop
+  game.js            systems wiring: lighting, exposure, camera, events
+  story.js           the script: radio lines, objectives, scares, ending
+  player.js          suit physics, SAFER, collisions, physiology
+  audio.js           Web Audio synthesis: suit, radio, score
+  hud.js             visor display
+  input.js           keyboard, mouse, touch
+  render.js          two-scale render passes, bloom, helmet visor shader
+  space/orbit.js     orbital mechanics, sun geometry, atmospheric transmittance
+  space/earth.js     Earth + atmosphere + airglow + aurora shader
+  space/sky.js       star catalogue and Milky Way
+  world/station.js   station geometry and signed-distance colliders
+  world/crewmate.js  EV2
+  world/debris.js    the cascade
+  world/effects.js   sparks, venting ice, shrapnel, impact flashes
+  world/textures.js  procedural blankets, foil, solar cells, decals
+```
+
+## Credits
+
+- Earth day, night and cloud/relief maps: derived from NASA Blue Marble / Black Marble imagery (via the three.js examples)
+- Stars: [HYG Database](https://github.com/astronexus/HYG-Database) v4.1 (CC BY-SA 4.0); the packed catalogue in `src/assets/stars.bin` is derived from it and shares that licence
+- Built with [three.js](https://threejs.org) and [Vite](https://vite.dev)

@@ -60,6 +60,7 @@ export class HUD {
       <div class="hud-nav" data-nav>
         <div><span class="k">Rel v</span> <span data-relv>0.00</span> <span class="u">m/s</span> <span class="u" data-relref>station</span></div>
         <div data-target hidden><span data-tname></span> <span data-trange></span> <span class="u">m</span> · <span class="k">closing</span> <span data-tclose></span> <span class="u">m/s</span></div>
+        <div class="hint" data-hint hidden></div>
       </div>
       <div class="reticle"><i></i></div>
       <div class="hud-prompt" data-prompt hidden>
@@ -80,7 +81,7 @@ export class HUD {
       alerts: q('[data-alerts]'), debris: q('[data-debris]'), dtime: q('[data-dtime]'), dstate: q('[data-dstate]'),
       relv: q('[data-relv]'), relref: q('[data-relref]'), target: q('[data-target]'), tname: q('[data-tname]'), trange: q('[data-trange]'), tclose: q('[data-tclose]'),
       prompt: q('[data-prompt]'), ptext: q('[data-ptext]'), ring: q('[data-ring]'),
-      markers: q('[data-markers]'), subs: q('[data-subs]'),
+      markers: q('[data-markers]'), subs: q('[data-subs]'), hint: q('[data-hint]'),
     };
     this.ecgCtx = this.el.ecg.getContext('2d');
     this.ecgData = new Float32Array(180);
@@ -164,6 +165,13 @@ export class HUD {
       line.classList.add('gone');
       setTimeout(() => line.remove(), 900);
     }, duration * 1000);
+  }
+
+  hint(html) {
+    if (html === this._hint) return;
+    this._hint = html;
+    this.el.hint.hidden = !html;
+    if (html) this.el.hint.innerHTML = html;
   }
 
   prompt(text, progress = 0) {

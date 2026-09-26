@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 import { makeDecal, rng } from './textures.js';
 
 // ---------------------------------------------------------------------------
@@ -92,12 +93,23 @@ export function buildCrewmate({ name = 'ELLISON', stripes = true } = {}) {
   const torso = mesh(new THREE.CapsuleGeometry(0.26, 0.34, 8, 18), suitMat, body);
   torso.scale.set(1.25, 1, 0.85);
   torso.position.y = 0.2;
-  const plss = mesh(new THREE.BoxGeometry(0.56, 0.72, 0.26), suitMat, body);
+  const plss = mesh(new RoundedBoxGeometry(0.56, 0.72, 0.26, 3, 0.06), suitMat, body);
   plss.position.set(0, 0.26, -0.33);
-  const plssTop = mesh(new THREE.BoxGeometry(0.5, 0.08, 0.22), suitDark, body);
+  const plssTop = mesh(new RoundedBoxGeometry(0.5, 0.08, 0.22, 2, 0.02), suitDark, body);
   plssTop.position.set(0, 0.66, -0.33);
-  const dcm = mesh(new THREE.BoxGeometry(0.32, 0.14, 0.14), suitDark, body);
+  // SAFER jetpack hugging the bottom of the backpack
+  const safer = mesh(new RoundedBoxGeometry(0.6, 0.2, 0.34, 2, 0.04), suitDark, body);
+  safer.position.set(0, -0.16, -0.36);
+  for (const sx of [-1, 1]) {
+    const tower = mesh(new RoundedBoxGeometry(0.1, 0.56, 0.12, 2, 0.03), suitDark, body);
+    tower.position.set(sx * 0.33, 0.12, -0.38);
+  }
+  const dcm = mesh(new RoundedBoxGeometry(0.32, 0.14, 0.14, 2, 0.03), suitDark, body);
   dcm.position.set(0, 0.1, 0.3);
+  // umbilical hose from display unit to the backpack
+  const hose = mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([
+    new THREE.Vector3(0.15, 0.1, 0.33), new THREE.Vector3(0.34, 0.05, 0.2), new THREE.Vector3(0.36, 0.2, -0.1), new THREE.Vector3(0.25, 0.3, -0.25),
+  ]), 20, 0.018, 6), suitDark, body);
   const nameTag = new THREE.Mesh(new THREE.PlaneGeometry(0.22, 0.055), new THREE.MeshStandardMaterial({ map: makeDecal([name], { w: 512, h: 128, size: 88, color: '#20242c' }), transparent: true, roughness: 0.9 }));
   nameTag.position.set(0.14, 0.36, 0.24);
   nameTag.rotation.y = 0.35;
@@ -124,14 +136,14 @@ export function buildCrewmate({ name = 'ELLISON', stripes = true } = {}) {
   head.add(crack);
   const lamps = [];
   for (const sx of [-1, 1]) {
-    const housing = mesh(new THREE.BoxGeometry(0.06, 0.07, 0.14), suitDark, head);
+    const housing = mesh(new RoundedBoxGeometry(0.06, 0.07, 0.14, 2, 0.015), suitDark, head);
     housing.position.set(sx * 0.21, 0.1, 0.06);
     const lens = new THREE.Mesh(new THREE.CircleGeometry(0.022, 12), new THREE.MeshBasicMaterial({ color: new THREE.Color(2, 1.9, 1.7) }));
     lens.position.set(sx * 0.21, 0.1, 0.132);
     head.add(lens);
     lamps.push(lens);
   }
-  const lampLight = new THREE.SpotLight(0xfff1dd, 14, 25, 0.42, 0.5, 1.8);
+  const lampLight = new THREE.SpotLight(0xfff1dd, 5, 25, 0.42, 0.5, 1.8);
   lampLight.position.set(0, 0.1, 0.15);
   lampLight.target.position.set(0, 0.0, 3);
   head.add(lampLight, lampLight.target);
@@ -147,6 +159,10 @@ export function buildCrewmate({ name = 'ELLISON', stripes = true } = {}) {
     segs.forEach((s, i) => {
       const seg = mesh(new THREE.CapsuleGeometry(s.r, s.len, 6, 14), s.mat || suitMat, p);
       seg.position.y = -s.len / 2 - s.r * 0.4;
+      // bearing ring at the top of each segment
+      const ring = mesh(new THREE.TorusGeometry(s.r + 0.004, 0.012, 6, 18), metal, p);
+      ring.rotation.x = Math.PI / 2;
+      ring.position.y = -s.r * 0.25;
       if (s.stripe && stripes) {
         const band = mesh(new THREE.CylinderGeometry(s.r + 0.006, s.r + 0.006, 0.07, 16, 1, true), red, p);
         band.position.y = seg.position.y + s.len * 0.15;
@@ -167,8 +183,8 @@ export function buildCrewmate({ name = 'ELLISON', stripes = true } = {}) {
     return joints;
   }
 
-  const gloveGeo = new THREE.BoxGeometry(0.09, 0.13, 0.06);
-  const bootGeo = new THREE.BoxGeometry(0.13, 0.12, 0.28);
+  const gloveGeo = new RoundedBoxGeometry(0.09, 0.14, 0.065, 2, 0.025);
+  const bootGeo = new RoundedBoxGeometry(0.14, 0.13, 0.3, 2, 0.04);
   const arms = [];
   for (const sx of [-1, 1]) {
     arms.push(
@@ -250,7 +266,7 @@ export function buildCrewmate({ name = 'ELLISON', stripes = true } = {}) {
       if (Math.random() < dt * 1.6) flicker = Math.random() * 0.4;
       flicker = THREE.MathUtils.lerp(flicker, 1, dt * 6);
       const lv = state.lampLevel * flicker;
-      lampLight.intensity = 14 * lv;
+      lampLight.intensity = 5 * lv;
       for (const l of lamps) l.material.color.setRGB(2 * lv, 1.9 * lv, 1.7 * lv);
     } else {
       lampLight.intensity = 0;

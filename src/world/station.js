@@ -281,11 +281,11 @@ export function buildStation({ maxAnisotropy = 8 } = {}) {
   const statusLamp = new THREE.Mesh(new THREE.SphereGeometry(0.07, 12, 8), new THREE.MeshBasicMaterial({ color: new THREE.Color(0.2, 3.0, 0.6) }));
   statusLamp.position.set(-0.85, 0.55, 7.66);
   airlockGroup.add(statusLamp);
-  const flood = new THREE.SpotLight(0xfff0dc, 60, 22, 0.55, 0.6, 1.6);
+  const flood = new THREE.SpotLight(0xfff0dc, 9, 22, 0.6, 0.7, 2);
   flood.position.set(0, 2.4, 6.9);
   flood.target.position.set(0, 0, 9.5);
   airlockGroup.add(flood, flood.target);
-  const floodLens = new THREE.Mesh(new THREE.CircleGeometry(0.12, 16), new THREE.MeshBasicMaterial({ color: new THREE.Color(6, 5.6, 5) }));
+  const floodLens = new THREE.Mesh(new THREE.CircleGeometry(0.12, 16), new THREE.MeshBasicMaterial({ color: new THREE.Color(3, 2.8, 2.5) }));
   floodLens.position.set(0, 2.36, 6.95);
   floodLens.lookAt(0, 0, 9.5);
   airlockGroup.add(floodLens);
@@ -313,7 +313,7 @@ export function buildStation({ maxAnisotropy = 8 } = {}) {
   topWin.rotation.x = Math.PI / 2;
   cupola.add(topWin);
   collider('cyl', { halfLen: 0.6, r: 1.45 }, new THREE.Vector3(0, -2.9, 0), undefined, null, { name: 'Cupola' });
-  const cupolaLight = new THREE.PointLight(0xffd9a8, 6, 9, 2);
+  const cupolaLight = new THREE.PointLight(0xffd9a8, 2.5, 9, 2);
   cupolaLight.position.set(0, -3.8, 0);
   root.add(cupolaLight);
 
@@ -575,7 +575,7 @@ export function buildStation({ maxAnisotropy = 8 } = {}) {
       const flickerRate = cabinPower < 1 ? 0.06 : 0.004;
       windowFlicker = Math.random() < flickerRate ? 0.05 + Math.random() * 0.5 : THREE.MathUtils.lerp(windowFlicker, 1, 0.2);
       M.window.emissiveIntensity = 2.2 * windowFlicker * cabinPower;
-      cupolaLight.intensity = 6 * windowFlicker * cabinPower;
+      cupolaLight.intensity = 2.5 * windowFlicker * cabinPower;
     }
     hatchState.open = THREE.MathUtils.damp(hatchState.open, hatchState.target, 1.6, dt);
     hatchPivot.rotation.y = -hatchState.open * 1.9;
