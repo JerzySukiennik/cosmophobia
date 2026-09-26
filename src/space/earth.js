@@ -175,6 +175,7 @@ float ggx(float NdotH, float a) {
 }
 
 vec3 aurora(vec3 ro, vec3 rd, float tMax) {
+  if (uAurora < 0.01) return vec3(0.0);
   vec2 sh = raySphere(ro, rd, RP + 330.0);
   float t0 = max(sh.x, 0.0);
   float t1 = min(sh.y, tMax);
@@ -381,6 +382,8 @@ export function createEarth(textures) {
     uniforms.uToEarth.value.copy(orbit.toEarth);
     uniforms.uSunDir.value.copy(orbit.sunDir);
     uniforms.uMagPole.value.copy(orbit.magPoleE);
+    // Aurora is invisible against a sunlit sky; skip its raymarch in daylight.
+    uniforms.uAurora.value = 1 - THREE.MathUtils.smoothstep(orbit.sunVisible, 0.3, 0.9);
 
     // Storms flicker somewhere in the visible disc, mostly on the night side.
     nextBolt -= dt;
