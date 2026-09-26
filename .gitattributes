@@ -1,0 +1,2 @@
+*.bat text eol=crlf
+play/*.html binary
